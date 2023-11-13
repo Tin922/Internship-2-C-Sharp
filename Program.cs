@@ -10,6 +10,16 @@ var radniciDictionary = new Dictionary<string, DateTime>()
     {"Eva Evic", new DateTime(1950, 11, 20)}
 };
 
+var proizvodi = new Dictionary<string, (int Kolicina, float Cijena, DateTime Rok)>()
+{
+     { "Kukuruz", (10, 4.8f, new DateTime(2023, 11, 9)) },    
+     { "Pšenica", (15, 5.2f, new DateTime(2023, 11, 17)) },  
+     { "Soja", (8, 4.5f, new DateTime(2023, 11, 6)) },       
+     { "Jabuke", (20, 3.2f, new DateTime(2023, 11, 16)) },    
+     { "Krumpir", (12, 2.9f, new DateTime(2023, 11, 4)) }
+
+};
+
 Izbornik();
 
 
@@ -18,6 +28,9 @@ int izbor = int.Parse(Console.ReadLine());
 
 switch (izbor)
 {
+    case 1:
+        //Artikli(proizvodi);
+        break;
     case 2:
         Radnici(radniciDictionary);
         break;
@@ -38,26 +51,82 @@ static void Radnici(Dictionary<string, DateTime> radniciDictionary)
     Console.WriteLine("2 - Brisanje radnika");
     Console.WriteLine("3 - Uredjivanje radnika");
     Console.WriteLine("4 - Ispis");
-    int izbor = int.Parse(Console.ReadLine());
-   
+    int izbor;
+    do
+    {
+        Console.Write("Unesite svoj odabir: ");
+    } while (!int.TryParse(Console.ReadLine(), out izbor));
+
+        switch (izbor)
+        {
+            case 1:
+                UnosRadnika(radniciDictionary);
+                break;
+            case 2:
+                BrisanjeRadnika(radniciDictionary);
+                break;
+            case 3:
+                UrediRadnika(radniciDictionary);
+                break;
+            case 4:
+                Ispis(radniciDictionary);
+                break;
+            case 0:
+                break;
+            default:
+                Console.WriteLine("Krivi unos");
+                break;
+        }
+    
+
+}
+static void Artikli(Dictionary<string, (int Kolicina, float Cijena, DateTime Rok)> proizvodi)
+{
+    Console.WriteLine("1 - Unos artikla");
+    Console.WriteLine("2 - Brisanje artikla");
+    Console.WriteLine("3 - Uređivanje artikla");
+    Console.WriteLine("4 - Ispis");
+
+    int izbor;
+    do
+    {
+        Console.Write("Unesite svoj odabir: ");
+    } while (!int.TryParse(Console.ReadLine(), out izbor));
+
     switch (izbor)
     {
         case 1:
-            UnosRadnika(radniciDictionary);
+            UnosArtikla(proizvodi);
             break;
         case 2:
-            BrisanjeRadnika(radniciDictionary);
+           // BrisanjeArtikla(proizvodi);
             break;
         case 3:
-            UrediRadnika(radniciDictionary);
+           // UrediArtikal(proizvodi);
             break;
         case 4:
-           Ispis(radniciDictionary);
-           break;
+            //IspisArtikla(proizvodi);
+            break;
         case 0:
+            break;
+        default:
+            Console.WriteLine("Krivi unos");
             break;
     }
 
+}
+static void UnosArtikla (Dictionary<string, (int Kolicina, float Cijena, DateTime Rok)> proizvodi)
+{
+    Console.WriteLine("Unesite ime artikla");
+    string ime = GetStringFromUser();
+    Console.WriteLine("Unesite kolicinu artikla");
+    int kolicina = GetInt();
+    Console.WriteLine("Unesite cijenu artikla");
+    float cijena = GetFloat();
+    Console.WriteLine("Unesite rok trajanja artikla");
+    DateTime rok = GetDateFromUser();
+
+    proizvodi.Add(ime, (kolicina, cijena, rok));
 }
 static void UnosRadnika (Dictionary<string, DateTime> radniciDictionary){
    
@@ -160,18 +229,15 @@ static void UrediRadnika(Dictionary<string, DateTime> radniciDictionary)
                         radniciDictionary[item.Key] = dob;
                         Console.WriteLine("Promjena je uspjesna");
                     }
-                    else Console.WriteLine("Promjena se nece izvrsiti");
-                    break;
+                    else Console.WriteLine("Promjena se nece izvrsiti"); return;
+                    
 
                 default:
                     Console.WriteLine("Krivi odabir.");
                     break;
             }
-        }
-        
-        
-            
-        
+        }             
+                   
 
     }
     Console.WriteLine("Ne postoji radnik s tim imenom");
@@ -220,9 +286,8 @@ static string GetStringFromUser()
 {
     string userInput;
 
-    do
-    {
-        Console.WriteLine("Upisite ime i prezime");
+    do    {
+        
         userInput = Console.ReadLine();
 
         if (string.IsNullOrWhiteSpace(userInput) || IsNumeric(userInput))
@@ -280,4 +345,27 @@ static bool AskUserToMakeChange()
             Console.WriteLine("Krivi unos. Upisite y za da ili n za ne");
         }
     }
+}
+
+static int GetInt()
+{
+    int userInput;
+
+    do
+    {
+        Console.WriteLine("Neispravan unos inta");
+    } while (!int.TryParse(Console.ReadLine(), out userInput) || userInput <= 0);
+
+    return userInput;
+}
+static float GetFloat()
+{
+    float userInput;
+
+    do
+    {
+        Console.Write("Neispravan unos floata");
+    } while (!float.TryParse(Console.ReadLine(), out userInput) || userInput <= 0);
+
+    return userInput;
 }
