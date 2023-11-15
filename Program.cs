@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Net;
 
 var radniciDictionary = new Dictionary<string, DateTime>()
 {
@@ -70,7 +71,7 @@ static void Artikli(Dictionary<string, (int Kolicina, float Cijena, DateTime Rok
            UrediArtikal(proizvodi);
             break;
         case 4:
-            //IspisArtikla(proizvodi);
+            IspisArtikla(proizvodi);
             break;
         case 0:
             break;
@@ -243,14 +244,15 @@ static void UrediZasebnoArtikal(Dictionary<string, (int Kolicina, float Cijena, 
 }
 static void UrediImeArtikla(Dictionary<string, (int Kolicina, float Cijena, DateTime Rok)> proizvodi, string imeArtikla)
 {
-   
+    Console.WriteLine("Upisite novo ime artikla");
+    string novoImeArtikla = GetStringFromUser();
     
         
         if (AskUserToMakeChange())
         {
 
-            proizvodi.Add(imeArtikla, (proizvodi[imeArtikla].Kolicina, proizvodi[imeArtikla].Cijena, proizvodi[imeArtikla].Rok));
-           // proizvodi.Remove(item.Key);
+            proizvodi.Add(novoImeArtikla, (proizvodi[imeArtikla].Kolicina, proizvodi[imeArtikla].Cijena, proizvodi[imeArtikla].Rok));
+            proizvodi.Remove(imeArtikla);
             Console.WriteLine("Promjena je uspjesna");
         }
         else Console.WriteLine("Promjena se nece izvrsiti");
@@ -359,6 +361,129 @@ static void Poskupjenje(Dictionary<string, (int Kolicina, float Cijena, DateTime
     else Console.WriteLine("Pojeftinjenje se nece dogoditi");
 
     PromjenaCijene(proizvodi);
+}
+static void IspisArtikla(Dictionary<string, (int Kolicina, float Cijena, DateTime Rok)> proizvodi)
+{
+    Console.WriteLine("a - Svih artikala kako su spremljeni");
+    Console.WriteLine("b - Svih artikala sortirano po imenu");
+    Console.WriteLine("c - Svih artikala sortirano po datumu silazno");
+    Console.WriteLine("d - Svih artikala sortirano po datumu uzlazno");
+    Console.WriteLine("e - Svih artikala sortirano po količini");
+    Console.WriteLine("f - Najprodavaniji artikl");
+    Console.WriteLine("g - Najmanje prodavan artikl");
+    Console.WriteLine("0 - Povratak na prosli izbornik");
+
+    while (true)
+    {
+        var izbor = Console.ReadLine();
+        switch (izbor)
+        {
+            case "a":
+                PrintArtikli(proizvodi);
+                break;
+
+            case "b":
+                PrintArtikliPoImenu(proizvodi);
+                break;
+
+            case "c":
+                PrintArtikliPoDatumuSilazno(proizvodi);
+                break;
+
+            case "d":
+                PrintArtikliPoDatumuUzlazno(proizvodi);
+                break;
+
+            case "e":
+                PrintArtikliPoKolicini(proizvodi);
+                break;
+
+            case "f":
+                // PrintNajprodavanijiArtikl(proizvodi);
+                break;
+
+            case "g":
+                //PrintNajmanjeProdavanArtikl(proizvodi);
+                break;
+
+            case "0":
+
+                return;
+
+            default:
+                Console.WriteLine("Nepoznata opcija. Pokušajte ponovno.");
+                break;
+        }
+    }
+}
+    static void PrintArtikli (Dictionary<string, (int Kolicina, float Cijena, DateTime Rok)> proizvodi)
+    {
+        
+        foreach(var item in proizvodi)
+        {
+            var rok = item.Value.Rok  - DateTime.Now;
+            int brojDana = rok.Days;
+            if(brojDana > 0)
+            Console.WriteLine($"{item.Key} ({item.Value.Kolicina}) - {item.Value.Cijena} -  broj dana do isteka  {brojDana}");
+            else
+                Console.WriteLine($"{item.Key} ({item.Value.Kolicina}) - {item.Value.Cijena} -  broj dana od isteka  {Math.Abs(brojDana)}");
+
+
+        }
+    }
+static void PrintArtikliPoImenu(Dictionary<string, (int Kolicina, float Cijena, DateTime Rok)> proizvodi)
+{
+
+    var sortedByIme = proizvodi.OrderBy(x => x.Key);
+    foreach (var item in sortedByIme)
+    {
+        var rok = item.Value.Rok - DateTime.Now;
+        int brojDana = rok.Days;
+        if (brojDana > 0)
+            Console.WriteLine($"{item.Key} ({item.Value.Kolicina}) - {item.Value.Cijena} -  broj dana do isteka  {brojDana}");
+        else
+            Console.WriteLine($"{item.Key} ({item.Value.Kolicina}) - {item.Value.Cijena} -  broj dana od isteka  {Math.Abs(brojDana)}");
+    }
+}
+static void PrintArtikliPoDatumuSilazno(Dictionary<string, (int Kolicina, float Cijena, DateTime Rok)> proizvodi)
+{
+
+    var sortedByDatumSilazno = proizvodi.OrderByDescending(x => x.Value.Rok);
+    foreach (var item in sortedByDatumSilazno)
+    {
+        var rok = item.Value.Rok - DateTime.Now;
+        int brojDana = rok.Days;
+        if (brojDana > 0)
+            Console.WriteLine($"{item.Key} ({item.Value.Kolicina}) - {item.Value.Cijena} -  broj dana do isteka  {brojDana}");
+        else
+            Console.WriteLine($"{item.Key} ({item.Value.Kolicina}) - {item.Value.Cijena} -  broj dana od isteka  {Math.Abs(brojDana)}");
+    }
+}
+static void PrintArtikliPoDatumuUzlazno(Dictionary<string, (int Kolicina, float Cijena, DateTime Rok)> proizvodi)
+{
+    var sortedByDatumUzlazno = proizvodi.OrderBy(x => x.Value.Rok);
+    foreach (var item in sortedByDatumUzlazno)
+    {
+        var rok = item.Value.Rok - DateTime.Now;
+        int brojDana = rok.Days;
+        if (brojDana > 0)
+            Console.WriteLine($"{item.Key} ({item.Value.Kolicina}) - {item.Value.Cijena} -  broj dana do isteka  {brojDana}");
+        else
+            Console.WriteLine($"{item.Key} ({item.Value.Kolicina}) - {item.Value.Cijena} -  broj dana od isteka  {Math.Abs(brojDana)}");
+    }
+}
+static void PrintArtikliPoKolicini(Dictionary<string, (int Kolicina, float Cijena, DateTime Rok)> proizvodi)
+{
+    var sortedByKolicina = proizvodi.OrderByDescending(x => x.Value.Kolicina);
+    foreach (var item in sortedByKolicina)
+    {
+        var rok = item.Value.Rok - DateTime.Now;
+        int brojDana = rok.Days;
+        if (brojDana > 0)
+            Console.WriteLine($"{item.Key} ({item.Value.Kolicina}) - {item.Value.Cijena} -  broj dana do isteka  {brojDana}");
+        else
+            Console.WriteLine($"{item.Key} ({item.Value.Kolicina}) - {item.Value.Cijena} -  broj dana od isteka  {Math.Abs(brojDana)}");
+    }
 }
 static void Radnici(Dictionary<string, DateTime> radniciDictionary)
 {
