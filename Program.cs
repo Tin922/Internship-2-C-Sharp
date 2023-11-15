@@ -186,7 +186,7 @@ static void UrediArtikal(Dictionary<string, (int Kolicina, float Cijena, DateTim
                 UrediZasebnoArtikal(proizvodi);
                 break;
             case "b":
-                ArtikliBrisanjeRok(proizvodi);
+                PromjenaCijene(proizvodi);
                 break;
             case "0":
                 Artikli(proizvodi);
@@ -205,6 +205,48 @@ static void UrediZasebnoArtikal(Dictionary<string, (int Kolicina, float Cijena, 
 
     
 
+}
+static void PromjenaCijene(Dictionary<string, (int Kolicina, float Cijena, DateTime Rok)> proizvodi)
+{
+    while (true)
+    {
+        Console.WriteLine("a - poskupljenje svih proizvoda");
+        Console.WriteLine("b - popusti svih proizvoda");
+        Console.WriteLine("0 - povratak na prethodni izbornik");
+        string izbor = Console.ReadLine();
+        switch (izbor)
+        {
+            case "a":
+                Poskupjenje(proizvodi);
+                break;
+            case "b":
+                //Popusti(proizvodi);
+                break;
+            case "0":
+                UrediArtikal(proizvodi);
+                break;
+            default:
+                Console.WriteLine("krivo znak ste unijeli");
+                break;
+
+        }
+    }
+}
+static void Poskupjenje(Dictionary<string, (int Kolicina, float Cijena, DateTime Rok)> proizvodi)
+{
+    Console.WriteLine("Za koliko eura zelite da poskupe svi proizvodi");
+    float cijena = GetFloat();
+    if (AskUserToMakeChange())
+    {
+
+        foreach (var key in proizvodi.Keys.ToList())
+        {
+            proizvodi[key] = (proizvodi[key].Kolicina, proizvodi[key].Cijena + cijena, proizvodi[key].Rok);
+        }
+    }
+    else Console.WriteLine("Poskupljenej se nece dogoditi");
+
+    PromjenaCijene(proizvodi);
 }
 static void Radnici(Dictionary<string, DateTime> radniciDictionary)
 {
