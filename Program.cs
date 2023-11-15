@@ -29,7 +29,7 @@ int izbor = int.Parse(Console.ReadLine());
 switch (izbor)
 {
     case 1:
-        //Artikli(proizvodi);
+        Artikli(proizvodi);
         break;
     case 2:
         Radnici(radniciDictionary);
@@ -64,10 +64,10 @@ static void Artikli(Dictionary<string, (int Kolicina, float Cijena, DateTime Rok
             UnosArtikla(proizvodi);
             break;
         case 2:
-           // BrisanjeArtikla(proizvodi);
+           BrisanjeArtikla(proizvodi);
             break;
         case 3:
-           // UrediArtikal(proizvodi);
+           UrediArtikal(proizvodi);
             break;
         case 4:
             //IspisArtikla(proizvodi);
@@ -91,7 +91,120 @@ static void UnosArtikla (Dictionary<string, (int Kolicina, float Cijena, DateTim
     Console.WriteLine("Unesite rok trajanja artikla");
     DateTime rok = GetDateFromUser();
 
-    proizvodi.Add(ime, (kolicina, cijena, rok));
+    if (AskUserToMakeChange())
+    {
+        proizvodi.Add(ime, (kolicina, cijena, rok));
+        Console.WriteLine("Unos artikla je uspjesno obavljen");
+    }
+    else Console.WriteLine("Artikal nije unesen");
+    
+    Artikli(proizvodi);
+}
+static void BrisanjeArtikla(Dictionary<string, (int Kolicina, float Cijena, DateTime Rok)> proizvodi)
+{
+    while (true)
+    {
+        Console.WriteLine("a - brisanje po imenu");
+        Console.WriteLine("b - brisanje artikala kojima je istekao rok trajanja");
+        Console.WriteLine("0 - povratak na prosli izbornik");
+        string izbor = Console.ReadLine();
+        switch (izbor)
+        {
+            case "a":
+                ArtikliBrisanjePoImenu(proizvodi);
+                break;
+            case "b":
+                ArtikliBrisanjeRok(proizvodi);
+                break;
+            case "0":
+                Artikli(proizvodi);
+                break;
+            default:
+                Console.WriteLine("krivo znak ste unijeli");
+                break;
+
+        }
+    }
+
+}
+static void ArtikliBrisanjePoImenu(Dictionary<string, (int Kolicina, float Cijena, DateTime Rok)> proizvodi)
+{
+    Console.WriteLine("Unesite ime artikla kojeg zelite obrisati");
+    string imeArtikla = GetStringFromUser();
+
+    foreach (var item in proizvodi)
+    {
+        if (item.Key == imeArtikla)
+        {
+            if (AskUserToMakeChange())
+            {
+                proizvodi.Remove(item.Key);
+                Console.WriteLine($"Artikal {item.Key} je izbrisan");
+                return;
+            }
+            else { Console.WriteLine("Artikal se nece izbrisati");
+                return;
+            }
+        }
+    }
+    Console.WriteLine($"Ne postoji artikal s imenom {imeArtikla}");
+}
+static void ArtikliBrisanjeRok(Dictionary<string, (int Kolicina, float Cijena, DateTime Rok)> proizvodi)
+{
+    if (AskUserToMakeChange())
+    {
+        var danas = DateTime.Now;
+        List<string> itemsToRemove = new List<string>();
+        foreach (var item in proizvodi)
+        {
+            
+            if (item.Value.Rok < danas)
+            {
+                itemsToRemove.Add(item.Key);                
+               
+            }
+        }
+        foreach (var key in itemsToRemove)
+        {
+            proizvodi.Remove(key);
+            Console.WriteLine($"Artiklu {key} je istekao rok pa je izbrisan");
+        }
+    }
+    else Console.WriteLine("Artikli kojima je istekao rok se nece izbrisati");
+
+}
+static void UrediArtikal(Dictionary<string, (int Kolicina, float Cijena, DateTime Rok)> proizvodi)
+{
+    while (true)
+    {
+        Console.WriteLine("a - zasebno proizvoda");
+        Console.WriteLine("b - popusti/poskupljenje na sve proizvode");
+        string izbor = Console.ReadLine();
+        switch (izbor)
+        {
+            case "a":
+                UrediZasebnoArtikal(proizvodi);
+                break;
+            case "b":
+                ArtikliBrisanjeRok(proizvodi);
+                break;
+            case "0":
+                Artikli(proizvodi);
+                break;
+            default:
+                Console.WriteLine("krivo znak ste unijeli");
+                break;
+
+        }
+    }
+}
+static void UrediZasebnoArtikal(Dictionary<string, (int Kolicina, float Cijena, DateTime Rok)> proizvodi)
+{
+    Console.WriteLine("Unesite ime artikla kojeg zeltie urediti");
+    //var artikal = GetStringFromUser().ToLower();
+
+    
+
 }
 static void Radnici(Dictionary<string, DateTime> radniciDictionary)
 {
@@ -101,11 +214,7 @@ static void Radnici(Dictionary<string, DateTime> radniciDictionary)
     Console.WriteLine("3 - Uredjivanje radnika");
     Console.WriteLine("4 - Ispis");
     Console.WriteLine("0 - Povratak na glavni izbornik");
-    int izbor;
-    do
-    {
-        Console.Write("Unesite svoj odabir: ");
-    } while (!int.TryParse(Console.ReadLine(), out izbor));
+    int izbor = GetInt();
 
     switch (izbor)
     {
@@ -183,10 +292,16 @@ static void PoImenu(Dictionary<string, DateTime> radniciDictionary)
             {
                 radniciDictionary.Remove(item.Key);
                 Console.WriteLine("osoba s imenom " + ime + " je izbrisana");
+                return;
             }
-            else Console.WriteLine("Radnik se nece izbrisati");
+            else
+            {
+                Console.WriteLine("Radnik se nece izbrisati");
+                return;
+            }
         }
     }
+    Console.WriteLine($"Radnik s imenom {ime} ne postoji");
     
 
 }
@@ -195,76 +310,86 @@ static void StarijiOd65(Dictionary<string, DateTime> radniciDictionary)
     if (AskUserToMakeChange())
     {
         var danas = DateTime.Now;
+        List<string> keysToRemove = new List<string>();
         foreach (var item in radniciDictionary)
         {
             int godine = danas.Year - item.Value.Year;
             if (godine >= 65)
             {
-                radniciDictionary.Remove(item.Key);
-                Console.WriteLine("Radnik " + item.Key + " je imao vise od 65 godina pa je izbirsan");
+                keysToRemove.Add(item.Key);                
+                
             }
+        }
+        foreach (var key in keysToRemove)
+        {            
+            radniciDictionary.Remove(key);
+            Console.WriteLine($"Osoba {key} je izbrisana jer ima više od 65 godina");
         }
     }
     else Console.WriteLine("Radnici stariji od 65 godina se nece izbrisati");
 }
 static void UrediRadnika(Dictionary<string, DateTime> radniciDictionary)
 {
+    while (true)
+    {
+        Console.WriteLine("Sto zelite promijeniti?");
+        Console.WriteLine("a - za ime");
+        Console.WriteLine("b - za datum rodjneja");
+        Console.WriteLine("0 - Povratak na prosli izbornik");
+        string izbor = Console.ReadLine();
+        switch (izbor)
+        {
+            case "a":
+                UrediImeRadnika(radniciDictionary);
+                break;
+            case "b":
+                //UrediDateRadnika(radniciDictionary);
+                break;
+            case "0":
+                Radnici(radniciDictionary);
+                break;
+            default:
+                Console.WriteLine("krivo znak ste unijeli");
+                break;
+
+        }
+       
+    }
+}
+    static void UrediImeRadnika(Dictionary<string, DateTime> radniciDictionary)
+    {
     Console.WriteLine("Unesite ime radnika");
     string ime = GetStringFromUser();
+    bool found = false;
 
+    Console.WriteLine("Upisite novo ime");
+    string novoIme = GetStringFromUser();
     foreach (var item in radniciDictionary.ToList())
     {
         if (item.Key == ime)
-        {            
-            
-                Console.WriteLine("Sto zelite promijeniti?");
-                Console.WriteLine("a - za ime");
-                Console.WriteLine("b - za datum rodjneja");
-                Console.WriteLine("0 - Povratak na prosli izbornik");
-                string choice = Console.ReadLine();
-                switch (choice)
-                {
-                    case "a":
-                        Console.WriteLine("upisite novo ime");
-                        string novoIme = GetStringFromUser();
-                        if (AskUserToMakeChange())
-                        {
-                            radniciDictionary.Add(novoIme, item.Value);
-                            radniciDictionary.Remove(item.Key);
-                            Console.WriteLine("Promjena je uspjesna");
-                        }
-                        else Console.WriteLine("Promjena se nece izvrsiti");
-                        break;
-                    case "b":
-                        var dob = GetDateFromUser();
-                        if (AskUserToMakeChange())
-                        {
-                            radniciDictionary[item.Key] = dob;
-                            Console.WriteLine("Promjena je uspjesna");
-                        }
-                        else Console.WriteLine("Promjena se nece izvrsiti"); return;
-
-                    case "0":                        
-                        Radnici(radniciDictionary);
-                        break;
-                    default:
-                        Console.WriteLine("Krivi odabir.");
-                        break;
-                }
-            
-        }             
-                   
-
+        {
+            found = true;
+            if (AskUserToMakeChange())
+            {
+                found = true;
+                radniciDictionary.Add(novoIme, item.Value);
+                radniciDictionary.Remove(item.Key);
+                Console.WriteLine("Promjena je uspjesna");
+            }
+            else Console.WriteLine("Promjena se nece izvrsiti");
+        }
     }
-    
+    if(!found)
+        Console.WriteLine($"Radnik s imenom {ime} ne postoji");
 }
+
 static void Ispis(Dictionary<string, DateTime> radniciDictionary)
 {
     while (true)
     {
         Console.WriteLine("a - ispis svih radnika ");
         Console.WriteLine("b - rodjendan u ovom mjesecu");
-        Console.WriteLine("0 - Povratak na prethodni izbornik");
+        Console.WriteLine("0 - povratak na prethodni izbornik");
 
         string izbor = Console.ReadLine();
         switch (izbor)
@@ -279,7 +404,7 @@ static void Ispis(Dictionary<string, DateTime> radniciDictionary)
                 Radnici(radniciDictionary);
                 break;
             default:
-                Console.WriteLine("krivi unos");
+                Console.WriteLine("Krivi unos!");
                 break;
         }
     }
@@ -333,7 +458,7 @@ static DateTime GetDateFromUser()
 
     while (true)
     {
-        Console.WriteLine("Unesite datum rođenja (format: dd/MM/yyyy):");
+        Console.WriteLine("Unesite datum (format: dd/MM/yyyy):");
 
         if (DateTime.TryParseExact(Console.ReadLine(), "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out dob))
         {
@@ -341,7 +466,7 @@ static DateTime GetDateFromUser()
         }
         else
         {
-            Console.WriteLine("Neuspješno unesen datuma rođenja. Molimo unesite ponovno datum rođenja.");
+            Console.WriteLine("Neuspješan unos datuma. Molimo unesite ponovno unesite datum.");
         }
     }
 }
@@ -376,10 +501,17 @@ static int GetInt()
 
     do
     {
-        Console.WriteLine("Neispravan unos inta");
-    } while (!int.TryParse(Console.ReadLine(), out userInput) || userInput <= 0);
+
+
+        if (!int.TryParse(Console.ReadLine(), out userInput) || userInput <= 0)
+        {
+            Console.WriteLine("Neispravan unos");
+        }
+
+    } while (userInput <= 0);
 
     return userInput;
+
 }
 static float GetFloat()
 {
@@ -387,8 +519,14 @@ static float GetFloat()
 
     do
     {
-        Console.Write("Neispravan unos floata");
-    } while (!float.TryParse(Console.ReadLine(), out userInput) || userInput <= 0);
+
+
+        if (!float.TryParse(Console.ReadLine(), out userInput) || userInput <= 0)
+        {
+            Console.WriteLine("Neispravan unos");
+        }
+
+    } while (userInput <= 0);
 
     return userInput;
 }
