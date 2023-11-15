@@ -177,7 +177,7 @@ static void UrediArtikal(Dictionary<string, (int Kolicina, float Cijena, DateTim
 {
     while (true)
     {
-        Console.WriteLine("a - zasebno proizvoda");
+        Console.WriteLine("a - Uređenje zasebno proizvoda");
         Console.WriteLine("b - popusti/poskupljenje na sve proizvode");
         string izbor = Console.ReadLine();
         switch (izbor)
@@ -201,8 +201,105 @@ static void UrediArtikal(Dictionary<string, (int Kolicina, float Cijena, DateTim
 static void UrediZasebnoArtikal(Dictionary<string, (int Kolicina, float Cijena, DateTime Rok)> proizvodi)
 {
     Console.WriteLine("Unesite ime artikla kojeg zeltie urediti");
-    //var artikal = GetStringFromUser().ToLower();
+    string imeArtikla = GetStringFromUser();
+    bool found = false;
+    foreach(var item in proizvodi)
+    {
+        if (imeArtikla == item.Key) 
+            found = true;
+    }
+    if (found) { while (true)
+        {
+            Console.WriteLine("Sto zelite promijeniti");
+            Console.WriteLine("a - ime artikla");
+            Console.WriteLine("b - kolicina artikla");
+            Console.WriteLine("c - cijena artikla");
+            Console.WriteLine("d - rok artikla");
+            Console.WriteLine("0 - povratak na prosli izbornik");
 
+            var choice = Console.ReadLine();
+            switch (choice)
+            {
+                case "a":
+                    UrediImeArtikla(proizvodi, imeArtikla);
+                    break;
+                case "b":
+                   UrediKolicinuArtikla(proizvodi, imeArtikla);
+                    break;
+                case "c":
+                   UrediCijenuArtikla(proizvodi, imeArtikla);
+                    break;
+                case "d":
+                    UrediRokTrajanjaArtikla(proizvodi, imeArtikla);
+                    break;
+                case "0":
+                    UrediArtikal(proizvodi);
+                    break;
+            }
+        } }
+
+    
+
+}
+static void UrediImeArtikla(Dictionary<string, (int Kolicina, float Cijena, DateTime Rok)> proizvodi, string imeArtikla)
+{
+   
+    
+        
+        if (AskUserToMakeChange())
+        {
+
+            proizvodi.Add(imeArtikla, (proizvodi[imeArtikla].Kolicina, proizvodi[imeArtikla].Cijena, proizvodi[imeArtikla].Rok));
+           // proizvodi.Remove(item.Key);
+            Console.WriteLine("Promjena je uspjesna");
+        }
+        else Console.WriteLine("Promjena se nece izvrsiti");
+    
+
+}
+static void UrediKolicinuArtikla(Dictionary<string, (int Kolicina, float Cijena, DateTime Rok)> proizvodi, string imeArtikla)
+{
+    Console.WriteLine("Upisite novu kolicinu");
+    int novaKolicina = GetInt();
+        
+        if (AskUserToMakeChange())
+        {
+            var updatedValue = (novaKolicina, proizvodi[imeArtikla].Cijena, proizvodi[imeArtikla].Rok);
+            proizvodi[imeArtikla] = updatedValue;
+            Console.WriteLine("Promjena je uspjesna");
+        }
+        else Console.WriteLine("Promjena se nece izvrsiti");
+    
+
+}
+static void UrediCijenuArtikla(Dictionary<string, (int Kolicina, float Cijena, DateTime Rok)> proizvodi, string imeArtikla)
+{
+    Console.WriteLine("Upisite novu cijenu");
+
+    float novaCijena = GetFloat();
+        
+        if (AskUserToMakeChange())
+        {
+            var updatedValue = (proizvodi[imeArtikla].Kolicina, novaCijena, proizvodi[imeArtikla].Rok);
+            proizvodi[imeArtikla] = updatedValue;
+            Console.WriteLine("Promjena je uspjesna");
+        }
+        else Console.WriteLine("Promjena se nece izvrsiti");
+    
+
+}
+static void UrediRokTrajanjaArtikla(Dictionary<string, (int Kolicina, float Cijena, DateTime Rok)> proizvodi, string imeArtikla)
+{
+    Console.WriteLine("Upisite novi rok trajanja");
+    DateTime noviDatum = GetDateFromUser();
+        
+        if (AskUserToMakeChange())
+        {
+            var updatedValue = (proizvodi[imeArtikla].Kolicina, proizvodi[imeArtikla].Cijena, noviDatum);
+            proizvodi[imeArtikla] = updatedValue;
+            Console.WriteLine("Promjena je uspjesna");
+        }
+        else Console.WriteLine("Promjena se nece izvrsiti");
     
 
 }
@@ -220,7 +317,7 @@ static void PromjenaCijene(Dictionary<string, (int Kolicina, float Cijena, DateT
                 Poskupjenje(proizvodi);
                 break;
             case "b":
-                //Popusti(proizvodi);
+                Popusti(proizvodi);
                 break;
             case "0":
                 UrediArtikal(proizvodi);
@@ -245,6 +342,21 @@ static void Poskupjenje(Dictionary<string, (int Kolicina, float Cijena, DateTime
         }
     }
     else Console.WriteLine("Poskupljenej se nece dogoditi");
+
+    PromjenaCijene(proizvodi);
+}static void Popusti(Dictionary<string, (int Kolicina, float Cijena, DateTime Rok)> proizvodi)
+{
+    Console.WriteLine("Za koliko eura zelite da pojeftine svi proizvodi");
+    float cijena = GetFloat();
+    if (AskUserToMakeChange())
+    {
+
+        foreach (var key in proizvodi.Keys.ToList())
+        {
+            proizvodi[key] = (proizvodi[key].Kolicina, proizvodi[key].Cijena - cijena, proizvodi[key].Rok);
+        }
+    }
+    else Console.WriteLine("Pojeftinjenje se nece dogoditi");
 
     PromjenaCijene(proizvodi);
 }
