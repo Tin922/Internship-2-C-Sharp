@@ -402,68 +402,11 @@ static void UrediDateRadnika(Dictionary<string, DateTime> radniciDictionary)
             else Console.WriteLine("promjena se nece izvrsiti"); return;
 
         }
-    }       
+    }
+    if (!found)
+        Console.WriteLine($"Radnik s imenom {ime} ne postoji");
 }
-//static void UrediRadnika(Dictionary<string, DateTime> radniciDictionary)
-//{
-//    Console.WriteLine("Unesite ime radnika");
-//    string ime = GetStringFromUser();
-//    bool found = false;
 
-//    foreach (var item in radniciDictionary.ToList())
-//    {
-//        if (item.Key == ime)
-//        {
-//                found = true;
-//                Console.WriteLine("Sto zelite promijeniti?");
-//                Console.WriteLine("a - za ime");
-//                Console.WriteLine("b - za datum rodjneja");
-//                Console.WriteLine("0 - Povratak na prosli izbornik");
-
-
-//                string choice = Console.ReadLine();
-//                switch (choice)
-//                {
-//                    case "a":
-//                        Console.WriteLine("upisite novo ime");
-//                        string novoIme = GetStringFromUser();
-//                        if (AskUserToMakeChange())
-//                        {
-//                            radniciDictionary.Add(novoIme, item.Value);
-//                            radniciDictionary.Remove(item.Key);
-//                            Console.WriteLine("Promjena je uspjesna");
-//                        }
-//                        else Console.WriteLine("Promjena se nece izvrsiti");
-//                        break;
-//                    case "b":
-//                        var dob = GetDateFromUser();
-//                        if (AskUserToMakeChange())
-//                        {
-//                            radniciDictionary[item.Key] = dob;
-//                            Console.WriteLine("Promjena je uspjesna");
-//                        }
-//                        else Console.WriteLine("Promjena se nece izvrsiti"); return;
-
-//                    case "0":
-//                        Radnici(radniciDictionary);
-//                        break;
-//                    default:
-//                        Console.WriteLine("Krivi odabir.");
-//                        break;
-//                }
-
-
-//        }             
-
-
-//    }
-//    if (!found)
-//    {
-//        Console.WriteLine("Radnik s tim imenom ne postoji");
-//    }
-
-
-//}
 static void Ispis(Dictionary<string, DateTime> radniciDictionary)
 {
     while (true)
