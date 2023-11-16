@@ -20,6 +20,45 @@ var proizvodi = new Dictionary<string, (int Kolicina, float Cijena, DateTime Rok
      { "Krumpir", (12, 2.9f, new DateTime(2023, 11, 4)) }
 
 };
+var racuni = new Dictionary<int, (DateTime VrijemeIzdavanja, float UkupnaCijena, List<(string ImeProizvoda, int Kolicina, float Cijena)> proizvod)>()
+{
+
+
+};
+racuni.Add(1, (new DateTime(2023, 11, 18), 0, new List<(string ImeProizvoda, int Kolicina, float Cijena)>
+        {
+            ("Kukuruz", 2, 4.8f),
+            ("Jabuke", 5, 3.2f),
+            ("Pšenica", 3, 5.2f)
+        }));
+
+racuni.Add(2, (new DateTime(2023, 11, 19), 0, new List<(string ImeProizvoda, int Kolicina, float Cijena)>
+        {
+            ("Soja", 4, 4.5f),
+            ("Krumpir", 8, 2.9f)
+        }));
+
+racuni.Add(3, (new DateTime(2023, 11, 20), 0, new List<(string ImeProizvoda, int Kolicina, float Cijena)>
+        {
+            ("Jabuke", 10, 3.2f),
+            ("Pšenica", 5, 5.2f),
+            ("Krumpir", 4, 2.9f)
+        }));
+
+foreach (var racun in racuni)
+{
+    float ukupnaCijena = racun.Value.UkupnaCijena;
+
+    if (ukupnaCijena == 0)
+    {
+        foreach (var proizvod in racun.Value.proizvod)
+        {
+            ukupnaCijena += proizvod.Kolicina * proizvod.Cijena;
+        }
+    }
+
+    racuni[racun.Key] = (racun.Value.VrijemeIzdavanja, ukupnaCijena, racun.Value.proizvod);
+}
 
 Izbornik();
 
@@ -34,6 +73,9 @@ switch (izbor)
         break;
     case 2:
         Radnici(radniciDictionary);
+        break;
+    case 3:
+        Racuni(racuni);
         break;
        
 }
@@ -783,12 +825,10 @@ static bool AskUserToMakeChange()
 
         if (userInput.ToLower() == "y")
         {
-            Console.WriteLine("Promjena napravljena");
             return true;
         }
         else if (userInput.ToLower() == "n")
         {
-            Console.WriteLine("Promjena se nece izvrsiti");
             return false;
         }
         else
@@ -832,4 +872,76 @@ static float GetFloat()
     } while (userInput <= 0);
 
     return userInput;
+}
+static void Racuni(Dictionary<int, (DateTime VrijemeIzdavanja, float UkupnaCijena, List<(string ImeProizvoda, int Kolicina, float Cijena)> proizvod)> racunDictionary)
+{
+    Console.WriteLine("1 - Unos novog računa");
+    Console.WriteLine("2 - Ispis računa");
+
+    int choice = GetInt();
+    switch(choice)
+    {
+        case 1:
+            //UnosNovogRacuna;
+            break;
+        case 2:
+            IspisRacuna(racunDictionary);
+            break;
+    }
+}
+
+static void IspisRacuna(Dictionary<int, (DateTime VrijemeIzdavanja, float UkupnaCijena, List<(string ImeProizvoda, int Kolicina, float Cijena)> proizvod)> racunDictionary)
+{
+    Console.WriteLine("1 - Ispis svih računa");
+    Console.WriteLine("2 - Odabir računa po ID-u");
+    Console.WriteLine("0 - Povratak na prethodni izbornik");
+
+    while (true)
+    {
+        int choice = GetInt();
+        switch (choice)
+        {
+            case 1:
+                IspisSvihRacuna(racunDictionary);
+                break;
+            case 2:
+                IspisRacunaPoIDu(racunDictionary);
+                break;
+            case 0:
+                Racuni(racunDictionary);
+                break;
+            default:
+                Console.WriteLine("krivi odabir!");
+                break;
+        }
+    }
+}
+static void IspisSvihRacuna(Dictionary<int, (DateTime VrijemeIzdavanja, float UkupnaCijena, List<(string ImeProizvoda, int Kolicina, float Cijena)> proizvod)> racunDictionary)
+{
+    foreach (var racun in racunDictionary)
+    {
+        Console.WriteLine($"{racun.Key} - {racun.Value.VrijemeIzdavanja} - {racun.Value.UkupnaCijena}");
+
+    }
+
+}
+static void IspisRacunaPoIDu(Dictionary<int, (DateTime VrijemeIzdavanja, float UkupnaCijena, List<(string ImeProizvoda, int Kolicina, float Cijena)> proizvod)> racunDictionary)
+{
+    Console.WriteLine("Upisite id racuna");
+    int trazeniID = GetInt();
+    bool found = false;
+    foreach(var racun in racunDictionary)
+    {
+        if(racun.Key == trazeniID)
+        {
+            found = true;
+            Console.WriteLine($"{racun.Key} - {racun.Value.VrijemeIzdavanja} - {racun.Value.UkupnaCijena}");
+            Console.WriteLine("Proizvodi na racunu");
+            foreach (var proizvod in racun.Value.proizvod)
+            {
+                Console.WriteLine($"  Ime Proizvoda: {proizvod.ImeProizvoda}, Kolicina: {proizvod.Kolicina}, Cijena: {proizvod.Cijena}");
+            }
+            Console.WriteLine();
+        }
+    }
 }
