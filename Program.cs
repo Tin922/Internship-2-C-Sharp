@@ -90,6 +90,9 @@ while (true)
         case 3:
             Racuni(racuni, proizvodi);
             break;
+        case 4:
+            Statistika(racuni, proizvodi);
+            break;
         case 0:
             return;
 
@@ -1069,3 +1072,100 @@ static void IspisRacunaPoIDu(Dictionary<int, (DateTime VrijemeIzdavanja, float U
         }
     }
 }
+static void Statistika(Dictionary<int, (DateTime VrijemeIzdavanja, float UkupnaCijena, List<(string ImeProizvoda, int Kolicina, float Cijena)> proizvod)> racunDictionary, Dictionary<string, (int Kolicina, float Cijena, DateTime Rok)> proizvodi)
+{
+    Console.WriteLine("1 - Ukupan broj artikala u trgovini");
+    Console.WriteLine("2 - Vrijednost artikala koji nisu još prodani");
+    Console.WriteLine("3 - Vrijednost svih artikala koji su prodani");
+    Console.WriteLine("4 - Stanje po mjesecima");
+    Console.WriteLine("5 - Povratak na glavni izbornik");
+    while (true)
+    {
+        int choice = GetInt();
+        switch (choice)
+        {
+            case 1:
+                UkupanBrojArtikala(proizvodi);
+                break;
+            case 2:
+                VrijednostArtikalaKojiNisuProdani(proizvodi);
+                break;
+            case 3:
+                VrijednostArtikalaKojiSuProdani(racunDictionary);
+                break;
+            case 4:
+                StanjePoMjesecima(racunDictionary);
+                break;
+            case 5:
+                return;
+            default:
+                Console.WriteLine("Krivi unos");
+                break;
+        }
+    }
+}
+static void UkupanBrojArtikala(Dictionary<string, (int Kolicina, float Cijena, DateTime Rok)> proizvodi)
+{
+    int ukupno = 0;
+    
+    foreach(var proizvod in proizvodi)
+    {
+        ukupno += proizvod.Value.Kolicina;
+    }
+    Console.WriteLine("Ukupan broj artikala je " + ukupno);
+}
+static void VrijednostArtikalaKojiNisuProdani(Dictionary<string, (int Kolicina, float Cijena, DateTime Rok)> proizvodi)
+{
+    float ukupno = 0;
+
+    foreach (var proizvod in proizvodi)
+    {
+        ukupno += proizvod.Value.Cijena * proizvod.Value.Kolicina;
+    }
+    Console.WriteLine("Vrijednost artikala koji nisu prodani" + ukupno);
+
+}
+static void VrijednostArtikalaKojiSuProdani(Dictionary<int, (DateTime VrijemeIzdavanja, float UkupnaCijena, List<(string ImeProizvoda, int Kolicina, float Cijena)> proizvod)> racunDictionary)
+{
+    float ukupno = 0;
+    foreach(var racun in racunDictionary)
+    {
+        ukupno += racun.Value.UkupnaCijena;
+
+    }
+    Console.WriteLine("Vrijednost artikala koji su prodani " + ukupno);
+}
+static void StanjePoMjesecima(Dictionary<int, (DateTime VrijemeIzdavanja, float UkupnaCijena, List<(string ImeProizvoda, int Kolicina, float Cijena)> proizvod)> racunDictionary)
+{
+    Console.WriteLine("Upisite godinu");
+    int godina = GetInt();
+    Console.WriteLine("Upisite mjesec");
+    int mjesec = GetInt();
+    Console.WriteLine("Unesite iznos place radnika");
+    float place = GetFloat();
+    Console.WriteLine("Unesite iznos najma");
+    float najam = GetFloat();
+    Console.WriteLine("Unesite ostale troskove");
+    float ostaliTroskovi = GetFloat();
+
+    float zaradaOdProdaje = 0;
+
+    var filteredRacuni = racunDictionary
+       .Where(pair => pair.Value.VrijemeIzdavanja.Year == godina && pair.Value.VrijemeIzdavanja.Month == mjesec);
+
+    foreach (var racun in filteredRacuni)
+    {
+        zaradaOdProdaje += racun.Value.UkupnaCijena;
+    }
+
+    float ukupniTroskovi = place + najam + ostaliTroskovi;
+    float profit = zaradaOdProdaje - ukupniTroskovi;
+
+    if(profit >0)
+    Console.WriteLine($"Profit za {mjesec}/{godina}: {profit}");
+    else
+        Console.WriteLine($"Gubitak za {mjesec}/{godina}: {profit}");
+
+
+}
+
