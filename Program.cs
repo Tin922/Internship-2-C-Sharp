@@ -75,7 +75,7 @@ switch (izbor)
         Radnici(radniciDictionary);
         break;
     case 3:
-        Racuni(racuni);
+        Racuni(racuni, proizvodi);
         break;
        
 }
@@ -873,7 +873,7 @@ static float GetFloat()
 
     return userInput;
 }
-static void Racuni(Dictionary<int, (DateTime VrijemeIzdavanja, float UkupnaCijena, List<(string ImeProizvoda, int Kolicina, float Cijena)> proizvod)> racunDictionary)
+static void Racuni(Dictionary<int, (DateTime VrijemeIzdavanja, float UkupnaCijena, List<(string ImeProizvoda, int Kolicina, float Cijena)> proizvod)> racunDictionary, Dictionary<string, (int Kolicina, float Cijena, DateTime Rok)> proizvodi)
 {
     Console.WriteLine("1 - Unos novog računa");
     Console.WriteLine("2 - Ispis računa");
@@ -882,15 +882,101 @@ static void Racuni(Dictionary<int, (DateTime VrijemeIzdavanja, float UkupnaCijen
     switch(choice)
     {
         case 1:
-            //UnosNovogRacuna;
+            UnosNovogRacuna(proizvodi, racunDictionary);
             break;
         case 2:
-            IspisRacuna(racunDictionary);
+            IspisRacunaDictionary(proizvodi, racunDictionary);
             break;
     }
 }
+static void UnosNovogRacuna(Dictionary<string, (int Kolicina, float Cijena, DateTime Rok)> proizvodi, Dictionary<int, (DateTime VrijemeIzdavanja, float UkupnaCijena, List<(string ImeProizvoda, int Kolicina, float Cijena)>)> racuni)
+{
+    Console.WriteLine("Svi dostupni proizvodi u dućanu:");
+    PrintArtikli(proizvodi);
 
-static void IspisRacuna(Dictionary<int, (DateTime VrijemeIzdavanja, float UkupnaCijena, List<(string ImeProizvoda, int Kolicina, float Cijena)> proizvod)> racunDictionary)
+    int noviRacunId = racuni.Keys.Any() ? racuni.Keys.Max() + 1 : 1; 
+
+    DateTime vrijemeIzdavanja = DateTime.Now;
+    float ukupnaCijena = 0;
+    List<(string ImeProizvoda, int Kolicina, float Cijena)> stavkeRacuna = new List<(string ImeProizvoda, int Kolicina, float Cijena)>();
+
+    string imeProizvoda = "";
+
+    while (imeProizvoda != "kraj")
+    {
+        Console.WriteLine("Upišite ime proizvoda ili 'kraj' za završetak unosa:");
+        imeProizvoda = GetStringFromUser();
+
+        if (imeProizvoda != "kraj")
+        {
+            if (proizvodi.TryGetValue(imeProizvoda, out var proizvod))
+            {
+                PrintArtikli(proizvodi);
+
+                Console.WriteLine("Upišite količinu:");
+                int kolicinaProizvoda = GetInt();
+
+                if (stavkeRacuna.Any(s => s.ImeProizvoda == imeProizvoda))
+                {
+                    Console.WriteLine("Proizvod već unesen. Unesite drugi proizvod.");
+                }
+                else
+                {
+                    float totalCijenaProizvoda = kolicinaProizvoda * proizvod.Cijena;
+
+                    stavkeRacuna.Add((imeProizvoda, kolicinaProizvoda, totalCijenaProizvoda));
+
+                    ukupnaCijena += totalCijenaProizvoda;
+
+                    proizvodi[imeProizvoda] = (proizvod.Kolicina - kolicinaProizvoda, proizvod.Cijena, proizvod.Rok);
+                }
+            }
+            else
+            {
+                Console.WriteLine("Proizvod nije pronađen. Unesite ispravno ime proizvoda.");
+            }
+        }
+    }
+
+    racuni.Add(noviRacunId, (vrijemeIzdavanja, ukupnaCijena, stavkeRacuna));
+
+
+    Console.WriteLine($"Račun ID: {noviRacunId}, Vrijeme Izdavanja: {vrijemeIzdavanja}, Ukupna Cijena: {ukupnaCijena}");
+
+
+    Console.WriteLine("Pritisnite 'c' za potvrdu računa ili 'p' za poništenje:");
+    char action = Console.ReadKey().KeyChar;
+
+    if (action == 'c')
+    {
+        proizvodi = proizvodi.Where(p => p.Value.Kolicina > 0).ToDictionary(p => p.Key, p => p.Value);
+
+        Console.WriteLine("Račun je potvrđen. Artikli su ažurirani.");
+    }
+    else if (action == 'p')
+    {
+        foreach (var stavka in stavkeRacuna)
+        {
+            if (proizvodi.TryGetValue(stavka.ImeProizvoda, out var originalProizvod))
+            {
+                proizvodi[stavka.ImeProizvoda] = (originalProizvod.Kolicina + stavka.Kolicina, originalProizvod.Cijena, originalProizvod.Rok);
+            }
+            else
+            {
+                proizvodi.Add(stavka.ImeProizvoda, (stavka.Kolicina, 0, DateTime.Now)); // Add the product back to the available products
+            }
+        }
+
+        Console.WriteLine("Račun je poništen. Artikli su vraćeni na stanje prije unosa računa.");
+    }
+    else
+    {
+        Console.WriteLine("Nepoznata akcija. Radnja nije izvršena.");
+    }
+    Racuni(racuni, proizvodi);
+}
+
+static void IspisRacunaDictionary(Dictionary <string, (int Kolicina, float Cijena, DateTime Rok)> proizvodi, Dictionary<int, (DateTime VrijemeIzdavanja, float UkupnaCijena, List<(string ImeProizvoda, int Kolicina, float Cijena)> )> racunDictionary)
 {
     Console.WriteLine("1 - Ispis svih računa");
     Console.WriteLine("2 - Odabir računa po ID-u");
@@ -908,7 +994,7 @@ static void IspisRacuna(Dictionary<int, (DateTime VrijemeIzdavanja, float Ukupna
                 IspisRacunaPoIDu(racunDictionary);
                 break;
             case 0:
-                Racuni(racunDictionary);
+                Racuni(racunDictionary, proizvodi);
                 break;
             default:
                 Console.WriteLine("krivi odabir!");
