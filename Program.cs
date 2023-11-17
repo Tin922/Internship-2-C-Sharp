@@ -94,7 +94,7 @@ static void Izbornik(Dictionary<int, (DateTime VrijemeIzdavanja, float UkupnaCij
                 Artikli(racunDictionary, proizvodi, radniciDictionary);
                 break;
             case 2:
-                //Radnici(racunDictionary, proizvodi, radniciDictionary);
+                Radnici(racunDictionary, proizvodi, radniciDictionary);
                 break;
             case 3:
                 //Racuni(racunDictionary, proizvodi, radniciDictionary);
@@ -492,7 +492,7 @@ static void IspisArtikla(Dictionary<int, (DateTime VrijemeIzdavanja, float Ukupn
         }
     }
 }
-    static void PrintArtikli (Dictionary<string, (int Kolicina, float Cijena, DateTime Rok)> proizvodi)
+static void PrintArtikli (Dictionary<string, (int Kolicina, float Cijena, DateTime Rok)> proizvodi)
     {
         
         foreach(var item in proizvodi)
@@ -609,37 +609,40 @@ static void PrintNajmanjeProdavanArtikl(Dictionary<int, (DateTime VrijemeIzdavan
     Console.WriteLine("Najmanje prodavan artikal je " + najprodavanijiArtikal);
 
 }
-static void Radnici(Dictionary<string, DateTime> radniciDictionary)
+static void Radnici(Dictionary<int, (DateTime VrijemeIzdavanja, float UkupnaCijena, List<(string ImeProizvoda, int Kolicina, float Cijena)> proizvod)> racunDictionary, Dictionary<string, (int Kolicina, float Cijena, DateTime Rok)> proizvodi, Dictionary<string, DateTime> radniciDictionary)
 {
-   
-    Console.WriteLine("1 - Unos radnika");
-    Console.WriteLine("2 - Brisanje radnika");
-    Console.WriteLine("3 - Uredjivanje radnika");
-    Console.WriteLine("4 - Ispis");
-    Console.WriteLine("5 - Povratak na glavni izbornik");
-    int izbor = GetInt();
 
-    switch (izbor)
-    {
+    while (true) {
+        Console.WriteLine("1 - Unos radnika");
+        Console.WriteLine("2 - Brisanje radnika");
+        Console.WriteLine("3 - Uredjivanje radnika");
+        Console.WriteLine("4 - Ispis");
+        Console.WriteLine("5 - Povratak na glavni izbornik");
+        int izbor = GetInt();
+        
+        switch (izbor)
+    {      
         case 1:
             UnosRadnika(radniciDictionary);
             break;
         case 2:
-            BrisanjeRadnika(radniciDictionary);
+            BrisanjeRadnika(racunDictionary, proizvodi, radniciDictionary);
             break;
         case 3:
-            UrediRadnika(radniciDictionary);
+            UrediRadnika(racunDictionary, proizvodi, radniciDictionary);
             break;
         case 4:
-            Ispis(radniciDictionary);
+            Ispis(racunDictionary, proizvodi, radniciDictionary);
             break;
         case 5:
             Console.Clear();
-            return;
+            Izbornik(racunDictionary, proizvodi, radniciDictionary);
+            break;
         default:
             Console.WriteLine("Krivi unos");
             break;
     }
+}
 }
 static void UnosRadnika (Dictionary<string, DateTime> radniciDictionary){
    
@@ -654,11 +657,11 @@ static void UnosRadnika (Dictionary<string, DateTime> radniciDictionary){
         radniciDictionary[ime] = (dob);
         Console.WriteLine("Radnik uspješno dodan!");
     }
-  
-    Radnici(radniciDictionary);
+    else Console.WriteLine("Radnik nece biti dodan");  
+    
 
 }
-static void BrisanjeRadnika(Dictionary<string, DateTime> radniciDictionary)
+static void BrisanjeRadnika(Dictionary<int, (DateTime VrijemeIzdavanja, float UkupnaCijena, List<(string ImeProizvoda, int Kolicina, float Cijena)> proizvod)> racunDictionary, Dictionary<string, (int Kolicina, float Cijena, DateTime Rok)> proizvodi, Dictionary<string, DateTime> radniciDictionary)
 {
     while (true)
     {
@@ -676,7 +679,7 @@ static void BrisanjeRadnika(Dictionary<string, DateTime> radniciDictionary)
                 break;
             case "0":
                 Console.Clear();
-                Radnici(radniciDictionary);
+                Radnici(racunDictionary, proizvodi, radniciDictionary);
                 break;
             default:
                 Console.WriteLine("krivo slovo ste unijeli");
@@ -733,7 +736,7 @@ static void StarijiOd65(Dictionary<string, DateTime> radniciDictionary)
     }
     else Console.WriteLine("Radnici stariji od 65 godina se nece izbrisati");
 }
-static void UrediRadnika(Dictionary<string, DateTime> radniciDictionary)
+static void UrediRadnika(Dictionary<int, (DateTime VrijemeIzdavanja, float UkupnaCijena, List<(string ImeProizvoda, int Kolicina, float Cijena)> proizvod)> racunDictionary, Dictionary<string, (int Kolicina, float Cijena, DateTime Rok)> proizvodi, Dictionary<string, DateTime> radniciDictionary)
 {
     while (true)
     {
@@ -752,7 +755,7 @@ static void UrediRadnika(Dictionary<string, DateTime> radniciDictionary)
                 break;
             case "0":
                 Console.Clear();
-                Radnici(radniciDictionary);
+                Radnici(racunDictionary, proizvodi, radniciDictionary);
                 break;
             default:
                 Console.WriteLine("krivo znak ste unijeli");
@@ -813,7 +816,7 @@ static void UrediDateRadnika(Dictionary<string, DateTime> radniciDictionary)
         Console.WriteLine($"Radnik s imenom {ime} ne postoji");
 }
 
-static void Ispis(Dictionary<string, DateTime> radniciDictionary)
+static void Ispis(Dictionary<int, (DateTime VrijemeIzdavanja, float UkupnaCijena, List<(string ImeProizvoda, int Kolicina, float Cijena)> proizvod)> racunDictionary, Dictionary<string, (int Kolicina, float Cijena, DateTime Rok)> proizvodi, Dictionary<string, DateTime> radniciDictionary)
 {
     while (true)
     {
@@ -832,7 +835,7 @@ static void Ispis(Dictionary<string, DateTime> radniciDictionary)
                 break;
             case "0":
                 Console.Clear();
-                Radnici(radniciDictionary);
+                Radnici(racunDictionary, proizvodi, radniciDictionary);                
                 break;
             default:
                 Console.WriteLine("Krivi unos!");
