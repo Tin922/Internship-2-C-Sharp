@@ -97,10 +97,10 @@ static void Izbornik(Dictionary<int, (DateTime VrijemeIzdavanja, float UkupnaCij
                 Radnici(racunDictionary, proizvodi, radniciDictionary);
                 break;
             case 3:
-                //Racuni(racunDictionary, proizvodi, radniciDictionary);
+                Racuni(racunDictionary, proizvodi, radniciDictionary);
                 break;
             case 4:
-                //Statistika(racunDictionary, proizvodi, radniciDictionary);
+               Statistika(racunDictionary, proizvodi, radniciDictionary);
                 break;
             case 0:
                 return;
@@ -962,7 +962,7 @@ static float GetFloat()
 
     return userInput;
 }
-static void Racuni(Dictionary<int, (DateTime VrijemeIzdavanja, float UkupnaCijena, List<(string ImeProizvoda, int Kolicina, float Cijena)> proizvod)> racunDictionary, Dictionary<string, (int Kolicina, float Cijena, DateTime Rok)> proizvodi)
+static void Racuni(Dictionary<int, (DateTime VrijemeIzdavanja, float UkupnaCijena, List<(string ImeProizvoda, int Kolicina, float Cijena)> proizvod)> racunDictionary, Dictionary<string, (int Kolicina, float Cijena, DateTime Rok)> proizvodi, Dictionary<string, DateTime> radniciDictionary)
 {
    
     while (true)
@@ -977,11 +977,12 @@ static void Racuni(Dictionary<int, (DateTime VrijemeIzdavanja, float UkupnaCijen
                 UnosNovogRacuna(proizvodi, racunDictionary);
                 break;
             case 2:
-                IspisRacunaDictionary(proizvodi, racunDictionary);
+                IspisRacunaDictionary(racunDictionary,proizvodi,radniciDictionary);
                 break;
             case 3:
                 Console.Clear();
-                return;
+                Izbornik(racunDictionary, proizvodi, radniciDictionary);
+                break;
             default:
                 Console.WriteLine("Krivi unos");
                 break;
@@ -1072,10 +1073,10 @@ static void UnosNovogRacuna(Dictionary<string, (int Kolicina, float Cijena, Date
     {
         Console.WriteLine("Nepoznata akcija. Radnja nije izvršena.");
     }
-    Racuni(racuni, proizvodi);
+    
 }
 
-static void IspisRacunaDictionary(Dictionary <string, (int Kolicina, float Cijena, DateTime Rok)> proizvodi, Dictionary<int, (DateTime VrijemeIzdavanja, float UkupnaCijena, List<(string ImeProizvoda, int Kolicina, float Cijena)> )> racunDictionary)
+static void IspisRacunaDictionary(Dictionary<int, (DateTime VrijemeIzdavanja, float UkupnaCijena, List<(string ImeProizvoda, int Kolicina, float Cijena)> proizvod)> racunDictionary, Dictionary<string, (int Kolicina, float Cijena, DateTime Rok)> proizvodi, Dictionary<string, DateTime> radniciDictionary)
 {
    
 
@@ -1094,7 +1095,8 @@ static void IspisRacunaDictionary(Dictionary <string, (int Kolicina, float Cijen
                 IspisRacunaPoIDu(racunDictionary);
                 break;
             case 3:
-                Racuni(racunDictionary, proizvodi);
+                Console.Clear();
+                Racuni(racunDictionary, proizvodi, radniciDictionary);
                 break;
             default:
                 Console.WriteLine("krivi odabir!");
@@ -1131,7 +1133,7 @@ static void IspisRacunaPoIDu(Dictionary<int, (DateTime VrijemeIzdavanja, float U
         }
     }
 }
-static void Statistika(Dictionary<int, (DateTime VrijemeIzdavanja, float UkupnaCijena, List<(string ImeProizvoda, int Kolicina, float Cijena)> proizvod)> racunDictionary, Dictionary<string, (int Kolicina, float Cijena, DateTime Rok)> proizvodi)
+static void Statistika(Dictionary<int, (DateTime VrijemeIzdavanja, float UkupnaCijena, List<(string ImeProizvoda, int Kolicina, float Cijena)> proizvod)> racunDictionary, Dictionary<string, (int Kolicina, float Cijena, DateTime Rok)> proizvodi, Dictionary<string, DateTime> radniciDictionary)
 {
    
     while (true)
@@ -1159,7 +1161,8 @@ static void Statistika(Dictionary<int, (DateTime VrijemeIzdavanja, float UkupnaC
                 break;
             case 5:
                 Console.Clear();
-                return;
+                Izbornik(racunDictionary, proizvodi, radniciDictionary);
+                break;
             default:
                 Console.WriteLine("Krivi unos");
                 break;
